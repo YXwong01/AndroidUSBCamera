@@ -2168,28 +2168,31 @@ static int submit_bulk_transfer(struct usbi_transfer *itransfer) {
 	 * short split-transfers to work reliable USBFS_CAP_BULK_CONTINUATION
 	 * is needed, but this is not always available.
 	 */
-	if (dpriv->caps & USBFS_CAP_BULK_SCATTER_GATHER) {
-		/* Good! Just submit everything in one go */
-		bulk_buffer_len = transfer->length ? transfer->length : 1;
-		use_bulk_continuation = 0;
-	} else if (dpriv->caps & USBFS_CAP_BULK_CONTINUATION) {
-		/* Split the transfers and use bulk-continuation to
-		   avoid issues with short-transfers */
-		bulk_buffer_len = MAX_BULK_BUFFER_LENGTH;
-		use_bulk_continuation = 1;
-	} else if (dpriv->caps & USBFS_CAP_NO_PACKET_SIZE_LIM) {
-		/* Don't split, assume the kernel can alloc the buffer
-		   (otherwise the submit will fail with -ENOMEM) */
-		bulk_buffer_len = transfer->length ? transfer->length : 1;
-		use_bulk_continuation = 0;
-	} else {
-		/* Bad, splitting without bulk-continuation, short transfers
-		   which end before the last urb will not work reliable! */
-		/* Note we don't warn here as this is "normal" on kernels <
-		   2.6.32 and not a problem for most applications */
-		bulk_buffer_len = MAX_BULK_BUFFER_LENGTH;
-		use_bulk_continuation = 0;
-	}
+//	if (dpriv->caps & USBFS_CAP_BULK_SCATTER_GATHER) {
+//		/* Good! Just submit everything in one go */
+//		bulk_buffer_len = transfer->length ? transfer->length : 1;
+//		use_bulk_continuation = 0;
+//	} else if (dpriv->caps & USBFS_CAP_BULK_CONTINUATION) {
+//		/* Split the transfers and use bulk-continuation to
+//		   avoid issues with short-transfers */
+//		bulk_buffer_len = MAX_BULK_BUFFER_LENGTH;
+//		use_bulk_continuation = 1;
+//	} else if (dpriv->caps & USBFS_CAP_NO_PACKET_SIZE_LIM) {
+//		/* Don't split, assume the kernel can alloc the buffer
+//		   (otherwise the submit will fail with -ENOMEM) */
+//		bulk_buffer_len = transfer->length ? transfer->length : 1;
+//		use_bulk_continuation = 0;
+//	} else {
+//		/* Bad, splitting without bulk-continuation, short transfers
+//		   which end before the last urb will not work reliable! */
+//		/* Note we don't warn here as this is "normal" on kernels <
+//		   2.6.32 and not a problem for most applications */
+//		bulk_buffer_len = MAX_BULK_BUFFER_LENGTH;
+//		use_bulk_continuation = 0;
+//	}
+
+    bulk_buffer_len = transfer->length;
+    use_bulk_continuation = 0;
 
 	int num_urbs = transfer->length / bulk_buffer_len;
 	int last_urb_partial = 0;
